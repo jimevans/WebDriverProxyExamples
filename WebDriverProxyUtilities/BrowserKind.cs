@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HttpStatusCodeExample
+namespace WebDriverProxyUtilities
 {
-    enum BrowserKind
+    public enum BrowserKind
     {
         InternetExplorer,
         IE = InternetExplorer,

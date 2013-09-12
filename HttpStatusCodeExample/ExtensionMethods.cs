@@ -8,6 +8,9 @@ using OpenQA.Selenium;
 
 namespace HttpStatusCodeExample
 {
+    /// <summary>
+    /// A class of extension methods for a WebDriver instance.
+    /// </summary>
     static class ExtensionMethods
     {
         private static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);

@@ -9,9 +9,9 @@ using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.IE;
 using OpenQA.Selenium.PhantomJS;
 
-namespace HttpStatusCodeExample
+namespace WebDriverProxyUtilities
 {
-    static class WebDriverFactory
+    public static class WebDriverFactory
     {
         /// <summary>
         /// Creates a WebDriver instance for the desired browser using the specified proxy settings.

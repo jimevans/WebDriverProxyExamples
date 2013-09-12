@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Fiddler;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Firefox;
-using OpenQA.Selenium.IE;
+using WebDriverProxyUtilities;
 
-namespace HttpStatusCodeExample
+namespace JavaScriptErrorsExample
 {
     class Program
     {
@@ -31,11 +28,12 @@ namespace HttpStatusCodeExample
             //IWebDriver driver = WebDriverFactory.CreateWebDriverWithProxy(BrowserKind.Chrome, proxy);
             //IWebDriver driver = WebDriverFactory.CreateWebDriverWithProxy(BrowserKind.PhantomJS, proxy);
 
-            TestStatusCodes(driver);
+            TestJavaScriptErrors(driver);
 
             driver.Quit();
 
             StopFiddlerProxy();
+            Console.WriteLine("Complete! Press <Enter> to exit.");
             Console.ReadLine();
         }
 
@@ -43,7 +41,6 @@ namespace HttpStatusCodeExample
         {
             Console.WriteLine("Shutting down Fiddler proxy");
             FiddlerApplication.Shutdown();
-            Console.WriteLine("Complete! Press <Enter> to exit.");
         }
 
         private static int StartFiddlerProxy(int desiredPort)
@@ -58,27 +55,31 @@ namespace HttpStatusCodeExample
             return proxyPort;
         }
 
-        private static void TestStatusCodes(IWebDriver driver)
+        private static void TestJavaScriptErrors(IWebDriver driver)
         {
-            // Using Mozilla's main page, because it demonstrates some of the potential
-            // problems with HTTP status code retrieval, and why there is not a one-size-
-            // fits-all approach to it.
-            string url = "http://www.mozilla.org/";
+            string url = "http://localhost.:2310/common/jserror.html";
             Console.WriteLine("Navigating to {0}", url);
-            int responseCode = driver.NavigateTo(url);
-            Console.WriteLine("Navigation to {0} returned response code {1}", url, responseCode);
-
-            string elementId = "firefox-promo-link";
-            Console.WriteLine("Clicking on element with ID {0}", elementId);
-            IWebElement element = driver.FindElement(By.Id(elementId));
-            responseCode = element.ClickNavigate();
-            Console.WriteLine("Element click returned response code {0}", responseCode);
-
-            // Demonstrates navigating to a 404 page.
-            url = "http://www.mozilla.org/en-US/doesnotexist.html";
-            Console.WriteLine("Navigating to {0}", url);
-            responseCode = driver.NavigateTo(url);
-            Console.WriteLine("Navigation to {0} returned response code {1}", url, responseCode);
+            driver.NavigateTo(url);
+            IList<string> javaScriptErrors = driver.GetJavaScriptErrors();
+            if (javaScriptErrors == null)
+            {
+                Console.WriteLine("Could not access JavaScript errors collection. This is a catastrophic failure.");
+            }
+            else
+            {
+                if (javaScriptErrors.Count > 0)
+                {
+                    Console.WriteLine("Found the following JavaScript errors on the page:");
+                    foreach (string javaScriptError in javaScriptErrors)
+                    {
+                        Console.WriteLine(javaScriptError);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No JavaScript errors found on the page.");
+                }
+            }
         }
     }
 }
