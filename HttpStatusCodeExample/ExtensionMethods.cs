@@ -32,7 +32,7 @@ namespace HttpStatusCodeExample
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "1#", Justification = "As a test sample project, specifying strings for URLs is okay.")]
         public static int NavigateTo(this IWebDriver driver, string targetUrl)
         {
-            return NavigateTo(driver, targetUrl);
+            return NavigateTo(driver, targetUrl, DefaultTimeout);
         }
 
         /// <summary>
@@ -81,8 +81,11 @@ namespace HttpStatusCodeExample
 
                 if (targetSession.fullUrl == targetUrl)
                 {
-                    Console.WriteLine("DEBUG: Found response for {0}, setting response code.", targetSession.fullUrl);
                     responseCode = targetSession.responseCode;
+                    if (printDebugInfo)
+                    {
+                        Console.WriteLine("DEBUG: Found response for {0}, setting response code.", targetSession.fullUrl);
+                    }
                 }
             };
 
@@ -193,6 +196,7 @@ namespace HttpStatusCodeExample
             // Lawrence).
             FiddlerApplication.ResponseHeadersAvailable += responseHandler;
             DateTime endTime = DateTime.Now.Add(timeout);
+            targetUrl = element.GetAttribute("href");
             element.Click();
             while (responseCode == 0 && DateTime.Now < endTime)
             {
