@@ -57,7 +57,9 @@ namespace JavaScriptErrorsExample
 
         private static void TestJavaScriptErrors(IWebDriver driver)
         {
-            string url = "http://localhost.:2310/common/jserror.html";
+            // Using Dave Haeffner's the-internet project http://github.com/arrgyle/the-internet,
+            // which provides pages that return various HTTP status codes.
+            string url = "http://the-internet.herokuapp.com/javascript_error";
             Console.WriteLine("Navigating to {0}", url);
             driver.NavigateTo(url);
             IList<string> javaScriptErrors = driver.GetJavaScriptErrors();

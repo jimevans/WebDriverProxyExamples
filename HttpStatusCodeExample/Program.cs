@@ -57,22 +57,26 @@ namespace HttpStatusCodeExample
 
         private static void TestStatusCodes(IWebDriver driver)
         {
-            // Using Mozilla's main page, because it demonstrates some of the potential
-            // problems with HTTP status code retrieval, and why there is not a one-size-
-            // fits-all approach to it.
-            string url = "http://www.mozilla.org/";
+            // Using Dave Haeffner's the-internet project http://github.com/arrgyle/the-internet,
+            // which provides pages that return various HTTP status codes.
+            string url = "http://the-internet.herokuapp.com/redirect";
             Console.WriteLine("Navigating to {0}", url);
             int responseCode = driver.NavigateTo(url);
             Console.WriteLine("Navigation to {0} returned response code {1}", url, responseCode);
 
-            string elementId = "firefox-promo-link";
+            // Demonstrates navigating to a 404 page.
+            url = "http://the-internet.herokuapp.com/redirector";
+            Console.WriteLine("Navigating to {0}", url);
+            responseCode = driver.NavigateTo(url);
+            Console.WriteLine("Navigation to {0} returned response code {1}", url, responseCode);
+            string elementId = "redirect";
             Console.WriteLine("Clicking on element with ID {0}", elementId);
             IWebElement element = driver.FindElement(By.Id(elementId));
             responseCode = element.ClickNavigate();
             Console.WriteLine("Element click returned response code {0}", responseCode);
 
             // Demonstrates navigating to a 404 page.
-            url = "http://www.mozilla.org/en-US/doesnotexist.html";
+            url = "http://the-internet.herokuapp.com/status_codes/404";
             Console.WriteLine("Navigating to {0}", url);
             responseCode = driver.NavigateTo(url);
             Console.WriteLine("Navigation to {0} returned response code {1}", url, responseCode);
