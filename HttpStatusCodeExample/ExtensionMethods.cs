@@ -1,19 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Fiddler;
-using OpenQA.Selenium;
+﻿// <copyright file="ExtensionMethods.cs" company="Jim Evans">
+// Copyright © 2013 Jim Evans
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// </copyright>
 
 namespace HttpStatusCodeExample
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Fiddler;
+    using OpenQA.Selenium;
+
     /// <summary>
     /// A class of extension methods for a WebDriver instance.
     /// </summary>
-    static class ExtensionMethods
+    public static class ExtensionMethods
     {
-        private static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
+        /// <summary>
+        /// The default timeout for navigation.
+        /// </summary>
+        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
 
         /// <summary>
         /// Navigates to a specified URL, returning the HTTP status code of the navigation.
@@ -21,9 +46,10 @@ namespace HttpStatusCodeExample
         /// <param name="driver">The driver used to navigate to the URL.</param>
         /// <param name="targetUrl">The URL to navigate to.</param>
         /// <returns>The HTTP status code of the navigation.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "1#", Justification = "As a test sample project, specifying strings for URLs is okay.")]
         public static int NavigateTo(this IWebDriver driver, string targetUrl)
         {
-            return NavigateTo(driver, targetUrl, DefaultTimeout);
+            return NavigateTo(driver, targetUrl);
         }
 
         /// <summary>
@@ -33,6 +59,7 @@ namespace HttpStatusCodeExample
         /// <param name="targetUrl">The URL to navigate to.</param>
         /// <param name="timeout">A <see cref="TimeSpan"/> structure for the time out of the navigation.</param>
         /// <returns>The HTTP status code of the navigation.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "1#", Justification = "As a test sample project, specifying strings for URLs is okay.")]
         public static int NavigateTo(this IWebDriver driver, string targetUrl, TimeSpan timeout)
         {
             return NavigateTo(driver, targetUrl, timeout, false);
@@ -47,14 +74,31 @@ namespace HttpStatusCodeExample
         /// <param name="printDebugInfo"><see langword="true"/> to print debugging information to the console;
         /// otherwise, <see langword="false"/>.</param>
         /// <returns>The HTTP status code of the navigation.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "1#", Justification = "As a test sample project, specifying strings for URLs is okay.")]
         public static int NavigateTo(this IWebDriver driver, string targetUrl, TimeSpan timeout, bool printDebugInfo)
         {
+            if (driver == null)
+            {
+                throw new ArgumentNullException("driver", "Driver cannot be null");
+            }
+
+            if (string.IsNullOrEmpty(targetUrl))
+            {
+                throw new ArgumentException("URL cannot be null or the empty string.", "targetUrl");
+            }
+
             int responseCode = 0;
             DateTime endTime = DateTime.Now.Add(timeout);
             SessionStateHandler responseHandler = delegate(Session targetSession)
             {
+                if (printDebugInfo)
+                {
+                    Console.WriteLine("DEBUG: Received response for resource with URL {0}", targetSession.fullUrl);
+                }
+
                 if (targetSession.fullUrl == targetUrl)
                 {
+                    Console.WriteLine("DEBUG: Found response for {0}, setting response code.", targetSession.fullUrl);
                     responseCode = targetSession.responseCode;
                 }
             };
@@ -107,6 +151,11 @@ namespace HttpStatusCodeExample
         /// <returns>The HTTP status code of the navigation.</returns>
         public static int ClickNavigate(this IWebElement element, TimeSpan timeout, bool printDebugInfo)
         {
+            if (element == null)
+            {
+                throw new ArgumentNullException("element", "Element cannot be null.");
+            }
+
             int responseCode = 0;
             string targetUrl = string.Empty;
             SessionStateHandler responseHandler = delegate(Session targetSession)
