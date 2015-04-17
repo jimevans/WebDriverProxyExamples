@@ -2,6 +2,10 @@ WebDriverProxyExamples
 ======================
 
 A series of examples showing how to use a proxy with the WebDriver .NET bindings.
+Note that as a set of examples, this repository is not maintained or updated with
+any regularity. **The code in this repository is not intended to be used in a
+production environment without judicious modificiation by the consumer.**
+
 The samples use Eric Lawrence's (now Telerik's) excellent [Fiddler](http://fiddler2.com/)
 proxy, specifically the [FiddlerCore](http://fiddler2.com/fiddlercore) component.
 Launching of browsers is handled by a factory class in a common referenced assembly.
